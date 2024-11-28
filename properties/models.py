@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .managers import UserManager
+from django.contrib.auth.models import User
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -35,9 +36,16 @@ class Property(models.Model):
     def __str__(self):
         return f"{self.address}, {self.city}"
     
-
 class Favorite(models.Model):
-    
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    property = models.CharField(max_length=255, null=True)
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    
+    class Meta:
+        unique_together = ('user', 'property')
 
+    def __str__(self):
+        
+        return f"{self.user.email} favorite property: {self.property.address}"
+
+   

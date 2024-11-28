@@ -14,7 +14,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsUser
 from drf_yasg.utils import swagger_auto_schema
-
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 
 
 User = get_user_model()
@@ -94,10 +95,13 @@ class PropertyList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        city = self.request.query_params.get('city', None)
-        price_min = self.request.query_params.get('price_min', None)
-        price_max = self.request.query_params.get('price_max', None)
-        property_type = self.request.query_params.get('property_type', None)
+        city = self.request.GET.get('city', None)
+        price_min = self.request.GET.get('price_min', None)
+        price_max = self.request.GET.get('price_max', None)
+        property_type = self.request.GET.get('property_type', None)
+        latitude = self.request.GET.get('latitude', None)
+        longitude = self.request.GET.get('longitude', None)
+        address = self.request.GET.get('address', None)
 
         if city:
             queryset = queryset.filter(city=city)
@@ -107,6 +111,10 @@ class PropertyList(generics.ListCreateAPIView):
             queryset = queryset.filter(price__lte=price_max)
         if property_type:
             queryset = queryset.filter(property_type__iexact=property_type)
+        if latitude and longitude:
+            queryset = queryset.filter(latitude=latitude, longitude=longitude)
+        if address:
+            queryset = queryset.filter(address__icontains=address)
 
         return queryset
     def post(self, request, *args, **kwargs):
@@ -123,12 +131,19 @@ class PropertyDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PropertySerializer
 
 
-class FavoriteList(generics.ListCreateAPIView):
-    serializer_class = FavoriteSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        return Favorite.objects.filter(user=self.request.user)
+@api_view(['POST'])
+@login_required
+def add_to_favorites(request, property_id):
+    property = get_object_or_404(Property, id=property_id)
+    favorite, created = Favorite.objects.get_or_create(user=request.user, property=property)
+    if created:
+        return Response({"message": "Property added to favorites."}, status=201)
+    return Response({"message": "Property already in favorites."}, status=200)
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+@api_view(['GET'])
+@login_required
+def favorites_list(request):
+    favorites = Favorite.objects.filter(user=request.user)
+    serializer = FavoriteSerializer(favorites, many=True)
+    return Response(serializer.data)

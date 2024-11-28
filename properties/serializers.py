@@ -16,9 +16,10 @@ class PropertySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class FavoriteSerializer(serializers.ModelSerializer):
+    property = PropertySerializer(read_only=True)
     class Meta:
         model = Favorite
-        fields = '__all__'
+        fields = ['id', 'property', 'created_at']
         
         
 

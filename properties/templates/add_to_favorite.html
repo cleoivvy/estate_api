@@ -1,0 +1,19 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Your Favorite Properties</h2>
+<ul>
+    {% for favorite in favorites %}
+        <li>
+            <strong>{{ favorite.property.title }}</strong><br>
+            Description: {{ favorite.property.description }}<br>
+            Price: ${{ favorite.property.price }}<br>
+            Address: {{ favorite.property.address }}<br>
+            Added on: {{ favorite.created_at|date:"Y-m-d H:i" }}
+        </li>
+    {% empty %}
+        <li>No favorite properties added yet.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
