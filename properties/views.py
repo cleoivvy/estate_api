@@ -147,3 +147,26 @@ def favorites_list(request):
     favorites = Favorite.objects.filter(user=request.user)
     serializer = FavoriteSerializer(favorites, many=True)
     return Response(serializer.data)
+
+
+
+class LogoutView(APIView):
+
+        @swagger_auto_schema(method="post", request_body=LogoutSerializer)
+        @action(detail=True, methods=['post'])
+        def post(self, request):
+            serializer = LogoutSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            
+            try:
+                
+                token = RefreshToken(token=serializer._validated_data['refresh_token'])
+                token.blacklist()
+            
+                
+                return Response({"message": "logout successful"}, status=200)
+            except Exception as error:
+                print(error)
+                return Response({"error": "failed to blacklist token"}, status=400)
+            
+            

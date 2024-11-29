@@ -7,5 +7,6 @@ urlpatterns = [
     path('properties/', PropertyList.as_view(), name='property-list'),
     path('property/<int:pk>/', PropertyDetail.as_view(), name='property-detail'),
     path('add_to_favorites/<int:property_id>/', add_to_favorites, name='add_to_favorites'),
-    path('favorites/', favorites_list, name='favorites_list')
+    path('favorites/', favorites_list, name='favorites_list'),
+    path('logout/', LogoutView.as_view(), name='logout')
 ]

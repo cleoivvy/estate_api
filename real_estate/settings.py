@@ -142,7 +142,7 @@ WSGI_APPLICATION = 'real_estate.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         # Replace this value with your local database's connection string.
-        default=os.getenv("db_url"),
+        default=os.getenv("db_url", "sqlite:///db.sqlite3"),
         conn_max_age=600
     )
 }
