@@ -61,11 +61,21 @@ The Real Estate API is a powerful tool designed for developers and real estate p
   - For `GET`: A list of properties saved by the user.
   - For `POST`: Confirmation of the property added to favorites.
 
-## Getting Started
+## Features
 
-### Prerequisites
-- python (version 12 or higher)
-- Django 
+- **User  Authentication**: Secure login and registration for users.
+- **Property Listings**: Detailed listings with descriptions, and pricing.
+- **Search Functionality**: Filter properties by location, price, type, and more.
+- **Favorites**: Save favorite properties for easy access later.
+- **Admin Panel**: Manage listings, users, and inquiries.
+
+## Technologies Used
+
+- **Frontend**: HTML
+- **Backend**: Python, Django.
+- **Database**: PostgreSQL 
+- **Authentication**: JWT (JSON Web Tokens)
+- **Deployment**: Render
 
 ### Installation
 1. Clone the repository:
