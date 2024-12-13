@@ -4,6 +4,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import *
 from .serializers import *
 from django.contrib.auth import get_user_model
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.views import APIView
@@ -129,11 +130,13 @@ class PropertyList(generics.ListCreateAPIView):
 class PropertyDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Property.objects.all()
     serializer_class = PropertySerializer
+    lookup_field = "pk"
 
 
 
 @api_view(['POST'])
-@login_required
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
 def add_to_favorites(request, property_id):
     property = get_object_or_404(Property, id=property_id)
     favorite, created = Favorite.objects.get_or_create(user=request.user, property=property)
@@ -142,7 +145,8 @@ def add_to_favorites(request, property_id):
     return Response({"message": "Property already in favorites."}, status=200)
 
 @api_view(['GET'])
-@login_required
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
 def favorites_list(request):
     favorites = Favorite.objects.filter(user=request.user)
     serializer = FavoriteSerializer(favorites, many=True)
